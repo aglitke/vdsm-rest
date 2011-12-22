@@ -357,6 +357,14 @@ class VM(Controller):
         ret = self.conn.vdsm.destroy(self.UUID)
         vdsOK(ret)
 
+    def _pause(self):
+        ret = self.conn.vdsm.pause(self.UUID)
+        vdsOK(ret)
+
+    def _continue(self):
+        ret = self.conn.vdsm.cont(self.UUID)
+        vdsOK(ret)
+
     def _ticket(self, password, timeout, previous="keep"):
         ret = self.conn.vdsm.setVmTicket(self.UUID, password, timeout, previous)
         vdsOK(ret)
@@ -407,6 +415,18 @@ class VM(Controller):
     def stop(self, *args):
         validate_method(('POST',))
         self._stop()
+        raise cherrypy.HTTPRedirect("/vdsm-api/vms/%s" % self.UUID, 303)
+    
+    @cherrypy.expose
+    def pause(self, *args):
+        validate_method(('POST',))
+        self._pause()
+        raise cherrypy.HTTPRedirect("/vdsm-api/vms/%s" % self.UUID, 303)
+
+    @cherrypy.expose
+    def cont(self, *args):
+        validate_method(('POST',))
+        self._continue()
         raise cherrypy.HTTPRedirect("/vdsm-api/vms/%s" % self.UUID, 303)
 
     @cherrypy.expose
